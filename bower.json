@@ -1,0 +1,10 @@
+{
+  "name": "kulkarta",
+  "authors": [
+    "Yuri Feldman <arrayjam@tbqh.net>"
+  ],
+  "dependencies": {
+    "topojson": "~1.6.12",
+    "d3": "~3.4.6"
+  }
+}
