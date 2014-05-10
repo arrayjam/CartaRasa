@@ -17,6 +17,16 @@
   }
 </style>
 <body>
+  <div class="container"></div>
+
+  <script type="text/ractive" id="controls">
+    <label>Longitude: <input type="number" value="{{longitude}}"></label>
+    <br />
+    <label>Latitude: <input type="number" value="{{latitude}}"></label>
+    <br />
+    {{longitude}}, {{latitude}}
+  </script>
+<script src="vendor/ractive/ractive.js"></script>
 <script src="vendor/d3/d3.js"></script>
 <script src="vendor/topojson/topojson.js"></script>
 <script src="circles.js"></script>

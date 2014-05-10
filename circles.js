@@ -23,10 +23,26 @@ d3.json("world-50m.json", function(err, world) {
       .attr("class", "boundary")
       .attr("d", path);
 
-  g.append("g").selectAll("path")
+  g.append("g")
+      .attr("class", "bloops")
+    .selectAll("path")
       .data(bloops.map(function(d) { return circle.angle(d).origin([0, 0])(); }))
     .enter().append("path")
       .attr("class", "bloop")
       .attr("d", path);
+
 });
 
+new Ractive({
+  el: ".container",
+  template: "#controls",
+  complete: function() {
+    var self = this;
+
+    self.observe("longitude latitude", function() {
+      g.select(".bloops").selectAll(".bloop")
+        .data(bloops.map(function(d) { return circle.angle(d).origin([self.get("longitude"), self.get("latitude")])(); }))
+        .attr("d", path);
+    });
+  }
+});
