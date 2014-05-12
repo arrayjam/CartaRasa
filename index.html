@@ -20,13 +20,17 @@
   <div class="container"></div>
 
   <script type="text/ractive" id="controls">
+    <svg class="minimap"></svg>
+    <input type="range" min="-180" max="180" value="{{longitude}}" step="0.1" />
+    <input type="range" min="-180" max="180" value="{{latitude}}" step="0.1" style="-webkit-appearance: slider-vertical" />
     <label>Longitude: <input type="number" value="{{longitude}}"></label>
     <br />
     <label>Latitude: <input type="number" value="{{latitude}}"></label>
     <br />
-    {{longitude}}, {{latitude}}
+    {{{latFormat(latitude)}}}, {{{lonFormat(longitude)}}}
   </script>
 <script src="vendor/ractive/ractive.js"></script>
 <script src="vendor/d3/d3.js"></script>
 <script src="vendor/topojson/topojson.js"></script>
+<script src="d3.geo.projection.min.js"></script>
 <script src="circles.js"></script>

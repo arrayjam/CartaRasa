@@ -6,6 +6,7 @@
   "dependencies": {
     "topojson": "~1.6.12",
     "d3": "~3.4.6",
-    "ractive": "~0.4.0"
+    "ractive": "~0.4.0",
+    "scrubbing.js": "~0.0.3"
   }
 }
