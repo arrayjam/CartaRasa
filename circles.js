@@ -48,6 +48,22 @@ new Ractive({
         .attr("height", minimapSide)
       .append("g");
 
+    var draggerSize = 200;
+
+    var dragger = d3.select(".dragger")
+        .attr("width", draggerSize)
+        .attr("height", draggerSize)
+      .append("g");
+
+    dragger.append("rect")
+        .attr("width", draggerSize)
+        .attr("height", draggerSize)
+        .attr("x", 0)
+        .attr("y", 0)
+        .style("stroke", 1)
+        .style("fill", "none");
+
+
     d3.json("world-50m.json", function(err, world) {
       g.append("path")
           .datum(topojson.feature(world, world.objects.land))
@@ -82,18 +98,27 @@ new Ractive({
           .attr("r", 3)
           .style("fill", "red");
 
+
       var place = function() {
         var x = d3.event.x,
-        y = d3.event.y,
-        coord = minimapProjection.invert([x, y]);
+            y = d3.event.y,
+            coord = minimapProjection.invert([x, y]);
 
-        self.set("longitude", coord[0]);
-        self.set("latitude", coord[1]);
+        move(coord[0], coord[1]);
+      };
+
+      var move = function(longitude, latitude) {
+        console.log(longitude, latitude);
+        var projected = projection([longitude, latitude]);
+
+        self.set("longitude", longitude);
+        self.set("latitude", latitude);
 
         placer.style("opacity", 1);
-        placer.attr("cx", projection(coord)[0]);
-        placer.attr("cy", projection(coord)[1]);
+        placer.attr("cx", projected[0]);
+        placer.attr("cy", projected[1]);
       };
+      move(0, 0);
 
       minimap.append("rect")
           .attr("width", minimapSide)
@@ -114,9 +139,51 @@ new Ractive({
                   })
                );
 
+      var dragInterval;
+      dragger.append("circle")
+          .datum({ x: draggerSize / 2, y: draggerSize / 2 })
+          .attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; })
+          .attr("r", 5)
+          .style("fill", "steelblue")
+          .style("cursor", "move")
+          .call(d3.behavior.drag()
+                  .on("drag", function(d) {
+                    d3.select(this)
+                        .attr("cx", d.x = d3.event.x)
+                        .attr("cy", d.y = d3.event.y);
+
+                    console.log(d3.event.x);
+
+                    move(self.get("longitude") + (d.x - draggerSize / 2) / 100,
+                         self.get("latitude") + (d.y - draggerSize / 2) / 100 * -1);
+                    clearInterval(dragInterval);
+                    dragInterval = setInterval(function() {
+                      move(self.get("longitude") + (d.x - draggerSize / 2) / 100,
+                           self.get("latitude") + (d.y - draggerSize / 2) / 100 * -1);
+                    }, 10);
+
+
+                    //console.log(self.get("longitude"), d3.event.x, d3.event.y);
+                  })
+                  //.on("mousedown",function() {
+                    //console.log(d3.event);
+                  //})
+                  .on("dragend", function() {
+                    d3.select(this).transition()
+                        .attr("cx", draggerSize / 2)
+                        .attr("cy", draggerSize / 2);
+                    clearInterval(dragInterval);
+                  })
+               );
+
     });
 
+    var longitudeBound = d3.scale.linear().domain([-180, 180]).range([-180, 180]).clamp(true);
+    var latitudeBound = d3.scale.linear().domain([-90, 90]).range([-90, 90]).clamp(true);
     self.observe("longitude latitude", function() {
+      self.set("longitude", longitudeBound(self.get("longitude")));
+      self.set("latitude", latitudeBound(self.get("latitude")));
       g.select(".bloops").selectAll(".bloop")
         .data(bloops.map(function(d) { return circle.angle(d).origin([self.get("longitude"), self.get("latitude")])(); }))
         .attr("d", path);
