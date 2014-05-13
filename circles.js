@@ -1,3 +1,5 @@
+var ε = 1e-5;
+
 new Ractive({
   el: ".container",
   template: "#controls",
@@ -15,6 +17,12 @@ new Ractive({
           format = d3.format(".4f");
 
       return format(Math.abs(number)) + "&deg; " + dir;
+    },
+
+    bloops: {
+      start: 0,
+      stop: 132,
+      step: 20
     }
   },
   complete: function() {
@@ -31,8 +39,6 @@ new Ractive({
         .projection(projection);
 
     var circle = d3.geo.circle();
-
-    var bloops = d3.range(0, 130, 32);
 
     var minimapSide = 300;
 
@@ -63,6 +69,9 @@ new Ractive({
         .style("stroke", 1)
         .style("fill", "none");
 
+    var bloopsContainer = g.append("g")
+        .attr("class", "bloops");
+
 
     d3.json("world-50m.json", function(err, world) {
       g.append("path")
@@ -73,14 +82,6 @@ new Ractive({
       g.append("path")
           .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
           .attr("class", "boundary")
-          .attr("d", path);
-
-      g.append("g")
-          .attr("class", "bloops")
-        .selectAll("path")
-          .data(bloops.map(function(d) { return circle.angle(d).origin([0, 0])(); }))
-        .enter().append("path")
-          .attr("class", "bloop")
           .attr("d", path);
 
       minimap.append("path")
@@ -181,12 +182,25 @@ new Ractive({
 
     var longitudeBound = d3.scale.linear().domain([-180, 180]).range([-180, 180]).clamp(true);
     var latitudeBound = d3.scale.linear().domain([-90, 90]).range([-90, 90]).clamp(true);
-    self.observe("longitude latitude", function() {
+    self.observe("longitude latitude bloops", function() {
       self.set("longitude", longitudeBound(self.get("longitude")));
       self.set("latitude", latitudeBound(self.get("latitude")));
-      g.select(".bloops").selectAll(".bloop")
-        .data(bloops.map(function(d) { return circle.angle(d).origin([self.get("longitude"), self.get("latitude")])(); }))
-        .attr("d", path);
+
+      var bloops = d3.range(self.get("bloops.start"),
+                            self.get("bloops.stop"),
+                            self.get("bloops.step"));
+
+      console.log(bloops);
+      var bloopers = bloopsContainer.selectAll("path")
+          .data(bloops.map(function(d) {  return circle.angle(d + ε).origin([self.get("longitude"), self.get("latitude")])(); }));
+
+      bloopers.enter().append("path");
+
+      bloopers.attr("class", "bloop")
+          .attr("d", path)
+          .style("opacity", function() { console.log(arguments); });
+
+      bloopers.exit().remove();
     });
   }
 });
