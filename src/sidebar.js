@@ -72,8 +72,16 @@ var SidebarLayer = React.createClass({
   onKey: function(event) {
     if (event.keyCode === 13) {
       event.preventDefault();
-      this.props.renameLayer(this.refs.layer.getDOMNode().innerText);
+      this.props.renameLayer(this.refs.input.getDOMNode().value);
     }
+  },
+
+  getInitialState: function() {
+    return { name: this.props.name };
+  },
+
+  handleChange: function(event) {
+    this.setState({ name: event.target.value });
   },
 
   render: function() {
@@ -82,9 +90,13 @@ var SidebarLayer = React.createClass({
       "selected": this.props.selected
     });
 
-    if (this.props.selected) {
+    if (this.props.renaming) {
       return (
-        <div className={classes} onClick={this.props.startRenamingLayer} contentEditable={this.props.renaming} onKeyPress={this.onKey} ref="layer">
+        <input type="text" onKeyPress={this.onKey} onChange={this.handleChange} ref="input" value={this.state.name}/>
+      );
+    } else if (this.props.selected) {
+      return (
+        <div className={classes} onClick={this.props.startRenamingLayer}>
           {this.props.name}
         </div>
       );
