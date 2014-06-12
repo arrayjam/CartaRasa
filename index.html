@@ -1,40 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-  .land {
-    fill: #222;
-  }
-
-  .boundary {
-    fill: none;
-    stroke: #fff;
-    stroke-width: .5px;
-  }
-
-  .bloop {
-    fill: steelblue;
-    opacity: 0.3;
-  }
 </style>
 <body>
-  <div class="container"></div>
-
-  <script type="text/ractive" id="controls">
-    <svg class="minimap"></svg>
-    <svg class="dragger"></svg>
-    <input type="range" min="-180" max="180" value="{{longitude}}" step="0.1" />
-    <input type="range" min="-90" max="90" value="{{latitude}}" step="0.1" style="-webkit-appearance: slider-vertical" />
-    <label>Longitude: <input type="number" value="{{longitude}}"></label>
-    <br />
-    <label>Latitude: <input type="number" value="{{latitude}}"></label>
-    <br />
-    <label>Start: <input type="number" value="{{bloops.start}}"></label>
-    <label>Stop: <input type="number" value="{{bloops.stop}}"></label>
-    <label>Step: <input type="number" value="{{bloops.step}}"></label>
-    {{{latFormat(latitude)}}}, {{{lonFormat(longitude)}}}
-  </script>
-<script src="vendor/ractive/ractive.js"></script>
+<script src="vendor/react/react-with-addons.js"></script>
+<script src="vendor/react/JSXTransformer.js"></script>
 <script src="vendor/d3/d3.js"></script>
 <script src="vendor/topojson/topojson.js"></script>
-<script src="d3.geo.projection.min.js"></script>
-<script src="circles.js"></script>
+<script type="text/jsx" src="src/sidebar.js"></script>
