@@ -109,7 +109,7 @@ new Ractive({
       };
 
       var move = function(longitude, latitude) {
-        console.log(longitude, latitude);
+        //console.log(longitude, latitude);
         var projected = projection([longitude, latitude]);
 
         self.set("longitude", longitude);
@@ -132,7 +132,7 @@ new Ractive({
           .style("cursor", "crosshair")
           .call(d3.behavior.drag()
                   .on("drag", function() {
-                    console.log("drag", d3.event.x);
+                    //console.log("drag", d3.event.x);
                     place();
                   })
                   .on("dragend", function() {
@@ -154,7 +154,7 @@ new Ractive({
                         .attr("cx", d.x = d3.event.x)
                         .attr("cy", d.y = d3.event.y);
 
-                    console.log(d3.event.x);
+                    //console.log(d3.event.x);
 
                     move(self.get("longitude") + (d.x - draggerSize / 2) / 100,
                          self.get("latitude") + (d.y - draggerSize / 2) / 100 * -1);
@@ -191,14 +191,21 @@ new Ractive({
                             self.get("bloops.step"));
 
       console.log(bloops);
+      bloops = bloops.map(function(d) {  return circle.angle(d + ε).origin([self.get("longitude"), self.get("latitude")])(); });
+      console.log(bloops);
+      var bloops0 = bloops[2];
+      var bloops1 = bloops[0];
+
+      bloops1.coordinates.push(bloops0.coordinates[0].reverse());
+      console.log("1", bloops1);
       var bloopers = bloopsContainer.selectAll("path")
-          .data(bloops.map(function(d) {  return circle.angle(d + ε).origin([self.get("longitude"), self.get("latitude")])(); }));
+          .data([bloops1]);
 
       bloopers.enter().append("path");
 
       bloopers.attr("class", "bloop")
-          .attr("d", path)
-          .style("opacity", function() { console.log(arguments); });
+          .attr("d", path);
+          //.style("opacity", function() { console.log(arguments); });
 
       bloopers.exit().remove();
     });

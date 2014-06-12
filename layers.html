@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0;
+    font-family: "Fira Sans";
+  }
+
+  .container {
+    display: flex;
+    height: 100vh;
+  }
+
+  h1, h2, h3 {
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .layers {
+    flex-basis: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    position: relative;
+    right: -1px;
+    margin-left: -1px;
+  }
+
+  .layer {
+    flex-basis: 20px;
+    line-height: 20px;
+    background-color: #f5f5f5;
+    padding: 5px 5px 5px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .layers:first-child {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .layer.active {
+    background-color: white;
+    border-left: 3px solid steelblue;
+    cursor: text;
+    border-right: none;
+  }
+
+  .selected-layer {
+    flex-basis: 300px;
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+</style>
+<body>
+  <div class="container">
+    <div class="layers">
+      <div class="layer">Base map</div>
+      <div class="layer active">Blast radius</div>
+      <div class="layer">Missile travel path</div>
+      <div class="layer">Cities</div>
+      <div class="layer">Military bases</div>
+    </div>
+    <div class="selected-layer">
+      <h1>Great Circle</h1>
+      <h2>Origin</h2>
+    </div>
+  </div>
+
+<script src="vendor/d3/d3.js"></script>
+<script>
+  d3.selectAll("h1").on("click", function() { console.log(this); });
+</script>
+
