@@ -58,7 +58,7 @@ var SidebarLayerList = React.createClass({
         return <RenamingSidebarLayer
           key={key}
           initialName={layer.name}
-          renameLayer={this.renameLayer.bind(this, i)} />
+          renameLayer={this.renameLayer.bind(this, i)} />;
       } else if (selected) {
         return <SelectedSidebarLayer
           key={key}
@@ -73,8 +73,9 @@ var SidebarLayerList = React.createClass({
     }, this);
     return (
       <div className="sidebarLayerList">
-        <LayersHeader />
+        {/* <LayersHeader /> */}
         {layers}
+        <div className="sidebarLayerFiller" />
       </div>
     );
   }
@@ -120,16 +121,17 @@ var RenamingSidebarLayer = React.createClass({
 
   componentDidMount: function() {
     this.refs.input.getDOMNode().select();
-    document.addEventListener("click", this.handleOutsideClick);
+    window.addEventListener("click", this.handleOutsideClick, true);
   },
 
   componentWillUnmount: function() {
-    document.removeEventListener("click", this.handleOutsideClick);
+    window.removeEventListener("click", this.handleOutsideClick, true);
   },
 
   renameLayer: function() {
-    var val = this.refs.input.getDOMNode().value;
-    this.props.renameLayer(val);
+    var val = this.state.name,
+        newName = val.trim() === "" ? this.props.initialName : val;
+    this.props.renameLayer(newName);
   },
 
   handleKeyPress: function(event) {
@@ -141,7 +143,7 @@ var RenamingSidebarLayer = React.createClass({
 
   render: function() {
     return (
-      <input type="text" value={this.state.name} onChange={this.handleChange} onKeyPress={this.handleKeyPress} ref="input"/>
+      <input className="sidebarLayer sidebarLayerRenamer selected" type="text" value={this.state.name} onChange={this.handleChange} onKeyPress={this.handleKeyPress} ref="input"/>
     );
   }
 });
