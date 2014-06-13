@@ -3,21 +3,13 @@
 
 var cx = React.addons.classSet;
 
-var defaultLayers = [
-  { name: "Basemap", type: "map" },
-  { name: "Blast Radius" },
-  { name: "Missile Travel Path" },
-  { name: "Cities" },
-  { name: "Military Bases" }
-];
-
 var App = React.createClass({
   getInitialState: function() {
-    return { selectedLayer: this.props.layers[0] };
+    return { selectedLayer: 0 };
   },
 
   selectLayer: function(index) {
-    this.setState({ selectedLayer: this.props.layers[index] });
+    this.setState({ selectedLayer: index });
   },
 
   render: function() {
@@ -27,14 +19,30 @@ var App = React.createClass({
           layers={this.props.layers}
           selectedLayer={this.state.selectedLayer}
           selectLayer={this.selectLayer} />
-        <LayerDetails layer={this.state.selectedLayer} />
+        <LayerDetails layer={this.props.layers[this.state.selectedLayer]} />
       </div>
     );
   }
 });
 
-React.renderComponent(
-  <App layers={defaultLayers}/>,
+var layers = [
+  { name: "Countries" },
+  { name: "Blast Radius" },
+  { name: "Missile Travel Path" },
+  { name: "Cities" },
+  { name: "Military Bases" }
+];
+
+layers.unshift({ name: "Projection", type: "projection", projection: "naturalEarth" });
+
+var layersCortex = new Cortex(layers);
+
+var appComponent = React.renderComponent(
+  <App layers={layersCortex}/>,
   document.body
 );
+
+layersCortex.on("update", function(updated) {
+  appComponent.setProps({layers: updated});
+});
 

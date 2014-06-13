@@ -12,13 +12,13 @@ var SidebarLayerList = React.createClass({
   },
 
   renameLayer: function(index, newName) {
-    this.props.layers[index].name = newName;
+    this.props.layers[index].name.set(newName);
     this.setState({ renamingSelectedLayer: false });
   },
 
   render: function() {
-    var layers = this.props.layers.map(function(layer, i) {
-      var selected = this.props.selectedLayer === layer,
+    var layers = this.props.layers.getValue().map(function(layer, i) {
+      var selected = this.props.selectedLayer === i,
           renaming = selected && this.state.renamingSelectedLayer,
           key = "layer-" + i;
 

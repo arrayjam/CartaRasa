@@ -1,11 +1,15 @@
 /** @jsx React.DOM */
 /* exported LayerDetails */
+/* global defaultProjections */
 
 var LayerDetails = React.createClass({
   render: function() {
-    if (this.props.layer.type === "map") {
+    if (this.props.layer.type.getValue() === "projection") {
       return (
-        <MapLayerDetails />
+        <ProjectionDetails
+          layer={this.props.layer}
+          projection={this.props.layer.projection.getValue()}
+          scale={this.props.layer.scale ? this.props.layer.scale.getValue() : undefined} />
       );
     } else {
       return (
@@ -15,10 +19,35 @@ var LayerDetails = React.createClass({
   }
 });
 
-var MapLayerDetails = React.createClass({
+var ProjectionDetails = React.createClass({
+  getDefaultProps: function() {
+    return { projection: "naturalEarth", scale: null };
+  },
+
   render: function() {
     return (
-      <div>I'm a map</div>
+      <ProjectionSelect
+        layer={this.props.layer}
+        projection={this.props.projection} />
+    );
+  }
+});
+
+var ProjectionSelect = React.createClass({
+  handleChange: function() {
+    this.props.layer.projection.set(this.refs.select.getDOMNode().value);
+  },
+
+  render: function() {
+    var projections = defaultProjections,
+        projectionOptions = projections.map(function(projection) {
+          return <option key={projection.projection} value={projection.projection}>{projection.name}</option>;
+        }, this);
+
+    return (
+      <select value={this.props.projection} onChange={this.handleChange} ref="select">
+        {projectionOptions}
+      </select>
     );
   }
 });
