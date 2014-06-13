@@ -1,35 +1,6 @@
 /** @jsx React.DOM */
+/* exported SidebarLayerList */
 
-var cx = React.addons.classSet;
-
-var defaultLayers = [
-  { name: "Basemap" },
-  { name: "Blast Radius" },
-  { name: "Missile Travel Path" },
-  { name: "Cities" },
-  { name: "Military Bases" }
-];
-
-var App = React.createClass({
-  getInitialState: function() {
-    return { selectedLayer: this.props.layers[0] };
-  },
-
-  selectLayer: function(index) {
-    this.setState({ selectedLayer: this.props.layers[index] });
-  },
-
-  render: function() {
-    return (
-      <div className="appContainer">
-        <SidebarLayerList
-          layers={this.props.layers}
-          selectedLayer={this.state.selectedLayer}
-          selectLayer={this.selectLayer} />
-      </div>
-    );
-  }
-});
 
 var SidebarLayerList = React.createClass({
   getInitialState: function() {
@@ -54,19 +25,16 @@ var SidebarLayerList = React.createClass({
       if (renaming) {
         return <RenamingSidebarLayer
           key={key}
-          type="map"
           initialName={layer.name}
           renameLayer={this.renameLayer.bind(this, i)} />;
       } else if (selected) {
         return <SelectedSidebarLayer
           key={key}
-          type="map"
           name={layer.name}
           startRenamingLayer={this.startRenamingLayer} />;
       } else {
         return <SidebarLayer
           key={key}
-          type="map"
           name={layer.name}
           selectLayer={this.props.selectLayer.bind(null, i)} />;
       }
@@ -146,9 +114,4 @@ var RenamingSidebarLayer = React.createClass({
     );
   }
 });
-
-React.renderComponent(
-  <App layers={defaultLayers}/>,
-  document.body
-);
 
