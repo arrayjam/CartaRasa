@@ -11,20 +11,21 @@ var defaultLayers = [
 ];
 
 var App = React.createClass({
+  getInitialState: function() {
+    return { selectedLayer: this.props.layers[0] };
+  },
+
+  selectLayer: function(index) {
+    this.setState({ selectedLayer: this.props.layers[index] });
+  },
+
   render: function() {
     return (
       <div className="appContainer">
-        <SidebarLayerList layers={defaultLayers} />
-      </div>
-    );
-  }
-});
-
-var LayersHeader = React.createClass({
-  render: function() {
-    return (
-      <div className="layersHeader">
-        Layers:
+        <SidebarLayerList
+          layers={this.props.layers}
+          selectedLayer={this.state.selectedLayer}
+          selectLayer={this.selectLayer} />
       </div>
     );
   }
@@ -32,11 +33,7 @@ var LayersHeader = React.createClass({
 
 var SidebarLayerList = React.createClass({
   getInitialState: function() {
-    return { selectedLayer: this.props.layers[0] };
-  },
-
-  selectLayer: function(index) {
-    this.setState({ selectedLayer: this.props.layers[index] });
+    return { renamingSelectedLayer: false };
   },
 
   startRenamingLayer: function() {
@@ -50,30 +47,32 @@ var SidebarLayerList = React.createClass({
 
   render: function() {
     var layers = this.props.layers.map(function(layer, i) {
-      var selected = this.state.selectedLayer === layer,
+      var selected = this.props.selectedLayer === layer,
           renaming = selected && this.state.renamingSelectedLayer,
           key = "layer-" + i;
 
       if (renaming) {
         return <RenamingSidebarLayer
           key={key}
+          type="map"
           initialName={layer.name}
           renameLayer={this.renameLayer.bind(this, i)} />;
       } else if (selected) {
         return <SelectedSidebarLayer
           key={key}
+          type="map"
           name={layer.name}
           startRenamingLayer={this.startRenamingLayer} />;
       } else {
         return <SidebarLayer
           key={key}
+          type="map"
           name={layer.name}
-          selectLayer={this.selectLayer.bind(this, i)} />;
+          selectLayer={this.props.selectLayer.bind(null, i)} />;
       }
     }, this);
     return (
       <div className="sidebarLayerList">
-        {/* <LayersHeader /> */}
         {layers}
         <div className="sidebarLayerFiller" />
       </div>
@@ -149,7 +148,7 @@ var RenamingSidebarLayer = React.createClass({
 });
 
 React.renderComponent(
-  <App />,
+  <App layers={defaultLayers}/>,
   document.body
 );
 
