@@ -4,16 +4,16 @@
 
 var LayerDetails = React.createClass({
   render: function() {
-    if (this.props.layer.type.getValue() === "projection") {
+    if (this.props.layer.type === undefined) {
+      return (
+        <UnimplementedLayerDetails />
+      );
+    } else if (this.props.layer.type.getValue() === "projection") {
       return (
         <ProjectionDetails
           layer={this.props.layer}
-          projection={this.props.layer.projection.getValue()}
-          scale={this.props.layer.scale ? this.props.layer.scale.getValue() : undefined} />
-      );
-    } else {
-      return (
-        <UnimplementedLayerDetails />
+          projection={getValOrUndefined(this.props.layer.projection)}
+          scale={getValOrUndefined(this.props.layer.scale)} />
       );
     }
   }

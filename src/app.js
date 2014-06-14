@@ -1,7 +1,12 @@
 /** @jsx React.DOM */
 /* global LayerDetails, SidebarLayerList */
+/* exported getValOrUndefined */
 
 var cx = React.addons.classSet;
+
+var getValOrUndefined = function(cortex) {
+  return cortex ? cortex.getValue() : undefined;
+};
 
 var App = React.createClass({
   getInitialState: function() {
