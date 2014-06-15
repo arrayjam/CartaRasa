@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 /* exported LayerDetails */
-/* global defaultProjections */
+/* global defaultProjections, getValOrUndefined*/
 
 var LayerDetails = React.createClass({
   render: function() {
@@ -12,8 +12,7 @@ var LayerDetails = React.createClass({
       return (
         <ProjectionDetails
           layer={this.props.layer}
-          projection={getValOrUndefined(this.props.layer.projection)}
-          scale={getValOrUndefined(this.props.layer.scale)} />
+          projectionData={this.props.layer.data} />
       );
     }
   }
@@ -21,31 +20,41 @@ var LayerDetails = React.createClass({
 
 var ProjectionDetails = React.createClass({
   getDefaultProps: function() {
-    return { projection: "naturalEarth", scale: null };
+    return { projectionData: { name: "Natural Earth", projection: "naturalEarth", scale: null }};
   },
 
   render: function() {
     return (
       <ProjectionSelect
         layer={this.props.layer}
-        projection={this.props.projection} />
+        projectionName={this.props.projectionData.name} />
     );
   }
 });
 
 var ProjectionSelect = React.createClass({
+  getInitialState: function() {
+    return { projections: defaultProjections };
+  },
+
   handleChange: function() {
-    this.props.layer.projection.set(this.refs.select.getDOMNode().value);
+    var index = this.refs.select.getDOMNode().value,
+        projection = this.state.projections[index];
+
+    this.props.layer.data.set(projection);
   },
 
   render: function() {
-    var projections = defaultProjections,
-        projectionOptions = projections.map(function(projection) {
-          return <option key={projection.projection} value={projection.projection}>{projection.name}</option>;
+    console.log("render", this.props);
+    var currentProjectionName = this.props.projectionName.getValue(),
+        currentProjectionIndex = null,
+        projectionOptions = this.state.projections.map(function(projection, i) {
+          if (projection.name === currentProjectionName) currentProjectionIndex = i;
+          return <option key={projection.projection} value={i}>{projection.name}</option>;
         }, this);
 
     return (
-      <select value={this.props.projection} onChange={this.handleChange} ref="select">
+      <select value={currentProjectionIndex} onChange={this.handleChange} ref="select">
         {projectionOptions}
       </select>
     );

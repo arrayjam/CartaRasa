@@ -1,5 +1,5 @@
 /** @jsx React.DOM */
-/* global LayerDetails, SidebarLayerList */
+/* global LayerDetails, SidebarLayerList, Map, Cortex */
 /* exported getValOrUndefined */
 
 var cx = React.addons.classSet;
@@ -25,20 +25,21 @@ var App = React.createClass({
           selectedLayer={this.state.selectedLayer}
           selectLayer={this.selectLayer} />
         <LayerDetails layer={this.props.layers[this.state.selectedLayer]} />
+        <Map layers={this.props.layers} />
       </div>
     );
   }
 });
 
 var layers = [
-  { name: "Countries" },
+  { name: "Countries", type: "features", data: { fill: "#222" } },
   { name: "Blast Radius" },
   { name: "Missile Travel Path" },
   { name: "Cities" },
   { name: "Military Bases" }
 ];
 
-layers.unshift({ name: "Projection", type: "projection", projection: "naturalEarth" });
+layers.unshift({ name: "Projection", type: "projection", data: { name: "Natural Earth", projection: "naturalEarth" }});
 
 var layersCortex = new Cortex(layers);
 
