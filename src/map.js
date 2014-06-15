@@ -23,13 +23,12 @@ var Map = React.createClass({
   },
 
   componentWillMount: function() {
-    this.props.layers.getValue().slice(1).map(function(layer, i) {
-      var key = "layer-" + (i + 1);
-      if (layer.type === "features") {
-        this.getJSON(layer.data.url, function(data) {
+    this.props.layers.map(function(layer, i) {
+      var key = "layer-" + i;
+      if (layer.type && layer.type.getValue() === "features") {
+        this.getJSON(layer.data.url.getValue(), function(data) {
           var o = {};
           o[key] = data;
-          console.log(o);
           this.setState(o);
         }.bind(this));
       }
@@ -37,23 +36,23 @@ var Map = React.createClass({
   },
 
   getJSON: function(url, callback) {
+    console.log("Getting JSON");
     d3.json(url, function(err, data) {
       return callback(data);
     });
   },
 
   render: function() {
-    var contentLayers = this.props.layers.getValue().slice(1).map(function(layer, i) {
-      var key = "layer-" + (i + 1);
-      if (layer.type === "features") {
-        console.log(this.state[key]);
+    var contentLayers = this.props.layers.map(function(layer, i) {
+      var key = "layer-" + i;
+      if (layer.type && layer.type.getValue() === "features") {
         return <FeaturesGroup key={key} data={layer.data} projection={this.getProjection()} json={this.state[key]}/>;
       } else {
         return <g key={key} />;
       }
     }, this);
     return (
-      <svg className="map" ref="map" projection={this.getProjection}>
+      <svg className="map" ref="map">
         {contentLayers}
       </svg>
     );
@@ -65,13 +64,29 @@ var FeaturesGroup = React.createClass({
     return { data: { fill: "green" }, json: null};
   },
 
+  shouldComponentUpdate: function(nextProps) {
+    var equal = function(one, two) {
+      return JSON.stringify(one) === JSON.stringify(two);
+    },
+    equalOne = function(one, two) {
+      return one === two;
+    },
+    changedProjection = !equalOne(nextProps.projection, this.props.projection),
+    changedData = !equal(nextProps.data.getValue(), this.props.data.getValue()),
+    newJSON = nextProps.json && !this.props.json;
+
+    console.log("changedData", changedData, this.props.data.getValue(), nextProps.data.getValue());
+
+    return changedProjection || changedData || newJSON;
+  },
+
   render: function() {
-    console.log("json received: ", this.props.json);
     if (this.props.json) {
       var path = d3.geo.path().projection(this.props.projection),
           features = topojson.feature(this.props.json, this.props.json.objects.countries).features,
-          featuresPaths = features.map(function(featuresData) {
-            return <path d={path(featuresData)} style={{fill: this.props.data.fill}} />;
+          featuresPaths = features.map(function(featuresData, i) {
+            return <path key={"feature-" + i} d={path(featuresData)} style={{fill: this.props.data.fill}} />;
+            //return <g />;
           }, this);
       return (
         <g className="land">

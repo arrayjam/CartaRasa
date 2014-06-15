@@ -352,8 +352,8 @@ var ArrayWrapper = {
     return this.__value.length;
   },
 
-  map: function(callback) {
-    return this.__wrappers.map(callback);
+  map: function(callback, context) {
+    return this.__wrappers.map(callback, context);
   },
 
   filter: function(callback, thisArg) {
