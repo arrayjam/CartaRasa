@@ -32,7 +32,7 @@ var App = React.createClass({
 });
 
 var layers = [
-  { name: "Countries", type: "features", data: { fill: "#222" } },
+  { name: "Countries", type: "features", data: { fill: "#222", url: "map/world-50m.json" } },
   { name: "Blast Radius" },
   { name: "Missile Travel Path" },
   { name: "Cities" },

@@ -14,6 +14,8 @@ var LayerDetails = React.createClass({
           layer={this.props.layer}
           projectionData={this.props.layer.data} />
       );
+    } else if (this.props.layer.type.getValue() === "features") {
+      return <div>Here be features</div>;
     }
   }
 });
